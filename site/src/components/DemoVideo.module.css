@@ -1,0 +1,86 @@
+.frame {
+  margin: 0;
+  max-width: 832px;
+  width: 100%;
+}
+
+/*
+ * Crops the recording's VS Code activity bar (left) and status bar (bottom)
+ * so the code and autocompletion fill the frame. Video and poster are 800x592;
+ * the native title bar is kept.
+ */
+.cropBox {
+  aspect-ratio: 772 / 584;
+  background: var(--kl-surface, #1e1e1e);
+  border: 1px solid var(--kl-line, #2e2e2e);
+  border-radius: 12px;
+  box-shadow: 0 24px 64px var(--kl-shadow, rgb(0 0 0 / 45%));
+  overflow: hidden;
+  position: relative;
+}
+
+.video {
+  aspect-ratio: 800 / 592;
+  display: block;
+  height: auto;
+  left: -6.67%;
+  position: absolute;
+  top: 0;
+  width: 106.67%;
+}
+
+.poster {
+  background-size: 100% 100%;
+}
+
+.lightPoster,
+:global(html[data-theme='light']) .darkPoster {
+  display: none;
+}
+
+:global(html[data-theme='light']) .lightPoster {
+  display: block;
+}
+
+.playbackButton {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.playbackButton svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 90%));
+}
+
+.playbackButton:focus-visible {
+  background: rgb(0 0 0 / 45%);
+  outline: 2px solid white;
+  outline-offset: -2px;
+}
+
+:global(html[data-theme='light']) .playbackButton {
+  color: #1e1e1e;
+}
+
+:global(html[data-theme='light']) .playbackButton svg {
+  filter: drop-shadow(0 1px 2px rgb(255 255 255 / 90%));
+}
+
+:global(html[data-theme='light']) .playbackButton:focus-visible {
+  background: rgb(255 255 255 / 65%);
+  outline-color: #1e1e1e;
+}

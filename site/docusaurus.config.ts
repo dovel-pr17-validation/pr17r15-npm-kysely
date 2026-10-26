@@ -1,0 +1,330 @@
+import type {
+  Options as PresetClassicOptions,
+  ThemeConfig as PresetClassicThemeConfig,
+} from '@docusaurus/preset-classic'
+import type { Config } from '@docusaurus/types'
+import type { MermaidConfig } from 'mermaid'
+import type { PluginOptions as LLMsTXTPluginOptions } from '@signalwire/docusaurus-plugin-llms-txt'
+import type { PluginOptions as VercelAnalyticsPluginOptions } from '@docusaurus/plugin-vercel-analytics'
+import { darkPlus, lightPlus } from './src/prismThemes'
+import { socialIconPaths } from './src/components/socialIconPaths'
+import deferPrism from './plugins/defer-prism'
+import preloadDemoPoster from './plugins/preload-demo-poster'
+import generateAgentDiscoveryCatalogs from './plugins/generate-agent-discovery-catalogs'
+import generateBrandLogoSprite from './plugins/generate-brand-logo-sprite'
+import remarkAgentDocs from './plugins/remark-agent-docs.mjs'
+import rehypeRemoveComments from './plugins/rehype-remove-comments.mjs'
+import packageJson from './package.json'
+
+const title = 'Kysely'
+const url = 'https://kysely.dev'
+
+const tagline =
+  'Kysely is the most powerful type-safe SQL query builder for TypeScript. Get unparalleled autocompletion and compile-time type safety for complex queries, joins, and subqueries. Used in production by Mozilla, Bluesky, and Materialize. Modern TypeScript, zero runtime dependencies.'
+
+function socialNavbarItem(
+  label: string,
+  href: string,
+  icon: { d: string; evenOdd?: boolean; viewBox: string },
+) {
+  const pathRules = icon.evenOdd
+    ? ' fill-rule="evenodd" clip-rule="evenodd"'
+    : ''
+
+  return {
+    position: 'right' as const,
+    type: 'html' as const,
+    value: `<a class="navbar-social" href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${label}"><svg viewBox="${icon.viewBox}" xmlns="http://www.w3.org/2000/svg"><path${pathRules} d="${icon.d}"/></svg></a>`,
+  }
+}
+
+export default {
+  baseUrl: '/',
+  favicon: 'img/favicon.ico',
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: { rel: 'ard', href: '/.well-known/ard.json' },
+    },
+    {
+      tagName: 'link',
+      attributes: { rel: 'ai-catalog', href: '/.well-known/ai-catalog.json' },
+    },
+    {
+      tagName: 'script',
+      attributes: { type: 'application/ld+json' },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: title,
+        description: tagline,
+        url,
+        applicationCategory: 'DeveloperApplication',
+        sameAs: [
+          'https://github.com/kysely-org/kysely',
+          'https://www.npmjs.com/package/kysely',
+        ],
+        license: 'https://github.com/kysely-org/kysely/blob/master/LICENSE',
+        isAccessibleForFree: true,
+        softwareVersion: packageJson.version,
+      }),
+    },
+    {
+      tagName: 'script',
+      attributes: { type: 'application/ld+json' },
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'Kysely team',
+        url,
+        sameAs: [
+          'https://github.com/kysely-org',
+          'https://www.linkedin.com/company/kysely-org',
+          'https://x.com/kysely_',
+          'https://bsky.app/profile/kysely.dev',
+        ],
+        areaServed: 'Worldwide',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress:
+            'Placeholder — global online project; no physical mailing address',
+        },
+        contactPoint: {
+          '@type': 'ContactPoint',
+          name: 'Igal Klebanov',
+          email: 'me@igal.dev',
+          contactType: 'maintainer',
+        },
+      }),
+    },
+  ],
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en'],
+  },
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+    mdx1Compat: {
+      admonitions: false,
+      comments: false,
+      headingIds: false,
+    },
+    mermaid: true,
+  },
+  onBrokenAnchors: 'throw',
+  onBrokenLinks: 'throw',
+  onDuplicateRoutes: 'throw',
+  organizationName: 'kysely-org',
+  plugins: [
+    deferPrism,
+    preloadDemoPoster,
+    generateAgentDiscoveryCatalogs,
+    generateBrandLogoSprite,
+    // `docusaurus start` has no Pagefind bundle (it's generated from the
+    // built HTML), which would leave the search button dead in dev. Serve
+    // the last production build's index instead: content may be stale, but
+    // search UI work doesn't need a 90s rebuild per iteration.
+    function pagefindDevServer() {
+      return {
+        configureWebpack: () => ({
+          devServer: {
+            static: [
+              {
+                directory: `${__dirname}/build/pagefind`,
+                publicPath: '/pagefind',
+              },
+            ],
+          },
+        }),
+        name: 'pagefind-dev-server',
+      }
+    },
+    [
+      '@signalwire/docusaurus-plugin-llms-txt',
+      {
+        content: {
+          beforeDefaultRehypePlugins: [rehypeRemoveComments],
+          // https://www.npmjs.com/package/@signalwire/docusaurus-plugin-llms-txt#content-selectors
+          contentSelectors: [
+            '.theme-doc-markdown', // Docusaurus main content area
+            'main', // Full category indexes, including all cards
+            '.code-example',
+          ],
+          enableLlmsFullTxt: true,
+          includeGeneratedIndex: true,
+          includePages: true,
+          includeVersionedDocs: false,
+          relativePaths: false,
+          remarkPlugins: [[remarkAgentDocs, { url }]],
+        },
+        depth: 3,
+        onRouteError: 'throw',
+        optionalLinks: [
+          {
+            title: 'Kysely API reference',
+            url: 'https://kysely-org.github.io/kysely-apidoc/',
+            description:
+              'Reference documentation for Kysely classes, methods, and types, with code examples.',
+          },
+        ],
+        siteDescription:
+          'The most powerful type-safe SQL query builder for TypeScript',
+        siteTitle: 'Kysely',
+      } satisfies LLMsTXTPluginOptions,
+    ],
+    [
+      'vercel-analytics',
+      { debug: true, mode: 'auto' } satisfies Omit<
+        VercelAnalyticsPluginOptions,
+        'id'
+      >,
+    ],
+  ],
+  presets: [
+    [
+      'classic',
+      {
+        blog: false,
+        docs: {
+          editUrl: 'https://github.com/kysely-org/kysely/tree/master/site',
+          sidebarPath: require.resolve('./sidebars.js'),
+        },
+        theme: {
+          customCss: [
+            require.resolve('./src/css/custom.css'),
+            require.resolve('@radix-ui/colors/sky.css'),
+            require.resolve('@radix-ui/colors/gray.css'),
+            require.resolve('@radix-ui/colors/blue.css'),
+            require.resolve('@radix-ui/colors/green.css'),
+            require.resolve('@radix-ui/colors/yellow.css'),
+          ],
+        },
+      } satisfies PresetClassicOptions,
+    ],
+  ],
+  projectName: 'kysely',
+  tagline,
+  themeConfig: {
+    image: 'img/social-card.png',
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },
+    docs: {
+      sidebar: {
+        autoCollapseCategories: true,
+        hideable: true,
+      },
+    },
+    // Minimal VitePress-style footer. Vercel badge stays: they host us for
+    // free.
+    footer: {
+      copyright: [
+        `Released under the MIT License.`,
+        `Copyright © 2022-present Sami Koskimäki & Kysely contributors.`,
+        `<a class="footer-vercel" href="https://vercel.com/?utm_source=kysely&utm_campaign=oss" target="_blank" rel="noopener noreferrer"><img src="/img/powered-by-vercel.svg" width="176" height="36" alt="Powered by Vercel" /></a>`,
+      ].join('<br/>'),
+    },
+    headTags: [
+      {
+        attributes: {
+          href: 'https://fonts.googleapis.com',
+          rel: 'preconnect',
+        },
+        tagName: 'link',
+      },
+      {
+        attributes: {
+          crossOrigin: 'anonymous',
+          href: 'https://fonts.gstatic.com',
+          rel: 'preconnect',
+        },
+        tagName: 'link',
+      },
+      {
+        attributes: {
+          as: 'style',
+          onLoad: "this.onload=null;this.rel='stylesheet'",
+          href: 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap',
+          rel: 'preload',
+        },
+        tagName: 'link',
+      },
+    ],
+    mermaid: {
+      options: {
+        sequence: {
+          mirrorActors: false,
+          showSequenceNumbers: true,
+        },
+      } satisfies MermaidConfig,
+    },
+    metadata: [
+      { property: 'og:type', content: 'website' },
+      {
+        content: tagline,
+        name: 'description',
+      },
+    ],
+    navbar: {
+      items: [
+        {
+          position: 'left',
+          type: 'search',
+        },
+        {
+          docId: 'intro',
+          label: 'Docs',
+          position: 'right',
+          type: 'doc',
+        },
+        {
+          href: 'https://play.kysely.dev',
+          label: 'Playground',
+          position: 'right',
+        },
+        {
+          href: 'https://kysely-org.github.io/kysely-apidoc',
+          label: 'API docs',
+          position: 'right',
+        },
+        {
+          ...socialNavbarItem(
+            'GitHub',
+            'https://github.com/kysely-org/kysely',
+            socialIconPaths.github,
+          ),
+          className: 'navbar-group-start',
+        },
+        socialNavbarItem(
+          'Discord',
+          'https://discord.gg/xyBJ3GwvAm',
+          socialIconPaths.discord,
+        ),
+        socialNavbarItem(
+          'Bluesky',
+          'https://bsky.app/profile/kysely.dev',
+          socialIconPaths.bluesky,
+        ),
+      ],
+      logo: {
+        alt: 'Kysely Logo',
+        height: 32,
+        src: 'img/logo.svg',
+        width: 32,
+      },
+      title: 'Kysely',
+    },
+    prism: {
+      darkTheme: darkPlus,
+      theme: lightPlus,
+    },
+  } satisfies PresetClassicThemeConfig,
+  clientModules: ['./src/clientModules/navbarScroll.ts'],
+  themes: ['@docusaurus/theme-mermaid'],
+  title,
+  url,
+} satisfies Config

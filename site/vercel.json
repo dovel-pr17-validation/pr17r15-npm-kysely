@@ -1,0 +1,59 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "routes": [
+    {
+      "src": "^/(?:index\\.html)?$",
+      "headers": {
+        "Link": "</llms.txt>; rel=\"describedby\"; type=\"text/plain\""
+      },
+      "continue": true
+    },
+    {
+      "src": "^/(?:docs(?:/.*)?|(?:index\\.html)?)$",
+      "headers": { "Vary": "Accept" },
+      "continue": true
+    },
+    {
+      "src": "^/.*\\.md$",
+      "headers": { "Content-Type": "text/markdown; charset=utf-8" },
+      "continue": true
+    },
+    {
+      "src": "^/(?:index\\.html)?$",
+      "methods": ["GET", "HEAD"],
+      "has": [{ "type": "header", "key": "accept", "value": "text/markdown" }],
+      "dest": "/index.md",
+      "headers": { "Content-Type": "text/markdown; charset=utf-8" },
+      "continue": true
+    },
+    {
+      "src": "^/docs/([^.]+?)/?$",
+      "methods": ["GET", "HEAD"],
+      "has": [{ "type": "header", "key": "accept", "value": "text/markdown" }],
+      "dest": "/docs/$1.md",
+      "headers": { "Content-Type": "text/markdown; charset=utf-8" },
+      "continue": true
+    },
+    { "handle": "filesystem" },
+    {
+      "src": "^/.*$",
+      "status": 404,
+      "methods": ["GET", "HEAD"],
+      "has": [{ "type": "header", "key": "accept", "value": "text/markdown" }],
+      "dest": "/404.md",
+      "headers": {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Vary": "Accept"
+      }
+    },
+    {
+      "src": "^/.*$",
+      "status": 404,
+      "dest": "/404.html",
+      "headers": {
+        "Content-Type": "text/html; charset=utf-8",
+        "Vary": "Accept"
+      }
+    }
+  ]
+}
