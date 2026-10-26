@@ -221,8 +221,8 @@ importers:
         specifier: 2.7.2
         version: 2.7.2
       '@types/prototype-pollution-vulnerable-lodash.merge-dont-upgrade':
-        specifier: npm:@types/lodash.merge@4.6.1
-        version: '@types/lodash.merge@4.6.1'
+        specifier: npm:@types/lodash.merge@4.6.9
+        version: '@types/lodash.merge@4.6.9'
       '@types/semver':
         specifier: 7.8.0
         version: 7.8.0
@@ -2605,8 +2605,8 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
-  '@types/lodash.merge@4.6.1':
-    resolution: {integrity: sha512-NtYs4xgE00GUwFZ6zLLsVbkSO5GD7ZHg+6OHmbcoY3aQIUkJbUdcnmb3raCnwwLAB02L+7B9rCMt0MLB53hflg==}
+  '@types/lodash.merge@4.6.9':
+    resolution: {integrity: sha512-23sHDPmzd59kUgWyKGiOMO2Qb9YtqRO/x4IhkgNUiPQ1+5MUVqi6bCZeq9nBJ17msjIMbEIO5u+XW4Kz6aGUhQ==}
 
   '@types/lodash@4.17.21':
     resolution: {integrity: sha512-FOvQ0YPD5NOfPgMzJihoT+Za5pdkDJWcbpuj1DjaKZIr/gxodQjY/uWEFlTNqW2ugXHUiL8lRQgw63dzKHZdeQ==}
@@ -10804,7 +10804,7 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
-  '@types/lodash.merge@4.6.1':
+  '@types/lodash.merge@4.6.9':
     dependencies:
       '@types/lodash': 4.17.21
 
